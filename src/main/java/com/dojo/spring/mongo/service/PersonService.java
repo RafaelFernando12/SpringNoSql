@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,10 @@ public class PersonService {
 
 	@Autowired
 	private PersonRepository personRepository;
+	@Autowired
+	private MessangingService messangingService;
+	@Value("${rabbitmq.queue.person_notification}")
+    private String personNotifications;
 
 	@Transactional(rollbackFor = Exception.class)
 	public PersonDTO create(PersonDTO personDTO, String userID) throws Exception {
@@ -34,6 +39,8 @@ public class PersonService {
 			
 			person.setMetadata(metadata);
 			Person createdPerson = personRepository.save(person);
+
+			messangingService.sendMessage(personNotifications, createdPerson);
 			return new PersonDTO(createdPerson);
 		} catch (Exception e) {
 			throw new Exception(e);

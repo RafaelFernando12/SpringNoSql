@@ -1,12 +1,14 @@
 package com.dojo.spring.mongo.model;
 
+import java.io.Serializable;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.dojo.spring.mongo.dto.PersonDTO;
 
 @Document(collection = "person")
-public class Person {
+public class Person implements Serializable{
 	
 	@Id
 	private String id;
