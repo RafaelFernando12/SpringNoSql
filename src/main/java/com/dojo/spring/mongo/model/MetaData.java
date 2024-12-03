@@ -1,8 +1,9 @@
 package com.dojo.spring.mongo.model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class MetaData {
+public class MetaData implements Serializable{
 	private LocalDateTime createAt;
 	private String createdBy;
 	private LocalDateTime updatedAt;
