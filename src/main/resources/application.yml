@@ -10,3 +10,13 @@ spring:
 rabbitmq:
   queue:
     person_notification: person_notifications
+  routing:
+    key:
+      person: person_notifications
+  exchange:
+    default: ""
+
+
+logging:
+  level:
+    org.springframework.amqp: DEBUG
