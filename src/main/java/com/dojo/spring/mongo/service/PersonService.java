@@ -24,8 +24,6 @@ public class PersonService {
 	private PersonRepository personRepository;
 	@Autowired
 	private MessangingService messangingService;
-	@Value("${rabbitmq.queue.person_notification}")
-    private String personNotifications;
 
 	@Transactional(rollbackFor = Exception.class)
 	public PersonDTO create(PersonDTO personDTO, String userID) throws Exception {
@@ -33,44 +31,44 @@ public class PersonService {
 			Person person = new Person(personDTO);
 			person.setExcluded(false);
 
-			MetaData metadata= new MetaData();
+			MetaData metadata = new MetaData();
 			metadata.setCreateAt(LocalDateTime.now());
 			metadata.setCreatedBy(userID);
-			
+
 			person.setMetadata(metadata);
 			Person createdPerson = personRepository.save(person);
 
-			messangingService.sendMessage(personNotifications, createdPerson);
+			messangingService.sendMessage(createdPerson);
 			return new PersonDTO(createdPerson);
 		} catch (Exception e) {
 			throw new Exception(e);
 		}
 	}
-	
+
 	public PersonDTO getByID(String id) {
 		Optional<Person> person = personRepository.findById(id);
-		 return person.map(PersonDTO::new).orElse(null);
+		return person.map(PersonDTO::new).orElse(null);
 	}
-	
+
 	public Page<PersonDTO> getAll(int pageNumber, int pageSize) {
-		   PageRequest pageable = PageRequest.of(pageNumber, pageSize);
-		   Page<Person> people = personRepository.findAll(pageable);
-		   return people.map(PersonDTO::new);
+		PageRequest pageable = PageRequest.of(pageNumber, pageSize);
+		Page<Person> people = personRepository.findAll(pageable);
+		return people.map(PersonDTO::new);
 	}
-	
-	  public PersonDTO update(PersonDTO updatedPersonDto, String userID) {
-	       Optional<Person> person = personRepository.findById(updatedPersonDto.getId());
-	        if (person.isPresent()) {
-	        	Person existingPerson = person.get();
-	            BeanUtils.copyProperties(updatedPersonDto, existingPerson, Utils.getNullPropertyNames(updatedPersonDto));
-	            existingPerson.getMetadata().setUpdatedAt(LocalDateTime.now());
-	            existingPerson.getMetadata().setUpdatedBy(userID);
-	            personRepository.save(existingPerson);
-	            return new PersonDTO(existingPerson);
-	        } else {
-	            return null;
-	        }
-	    }
+
+	public PersonDTO update(PersonDTO updatedPersonDto, String userID) {
+		Optional<Person> person = personRepository.findById(updatedPersonDto.getId());
+		if (person.isPresent()) {
+			Person existingPerson = person.get();
+			BeanUtils.copyProperties(updatedPersonDto, existingPerson, Utils.getNullPropertyNames(updatedPersonDto));
+			existingPerson.getMetadata().setUpdatedAt(LocalDateTime.now());
+			existingPerson.getMetadata().setUpdatedBy(userID);
+			personRepository.save(existingPerson);
+			return new PersonDTO(existingPerson);
+		} else {
+			return null;
+		}
+	}
 
 	public void delete(String id) {
 		personRepository.deleteById(id);
