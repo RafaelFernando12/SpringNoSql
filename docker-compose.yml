@@ -9,19 +9,6 @@ services:
     volumes:
       - mongodb_data:/data/db
 
-  dojospringmongo:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: dojospringmongo
-    ports:
-      - "8080:8080"
-    depends_on:
-      - mongodb
-    environment:
-      - SPRING_DATA_MONGODB_HOST=mongodb
-      - SPRING_DATA_MONGODB_DATABASE=spring_test
-  
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
