@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  dojospringmongo:
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
+    container_name: dojospringmongo
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATA_MONGODB_HOST=mongodb
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    ports:
+      - "27017:27017"
